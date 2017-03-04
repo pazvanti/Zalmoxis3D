@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.zalmoxis3d.event.EventDispatcher;
@@ -179,6 +180,9 @@ public class DisplayObject extends EventDispatcher{
      */
     protected void calculateGlobalCoordinates() {
         this.globalCoordinates = new Vector3(this.coordinates).add(this.parent.globalCoordinates);
+        if (this.modelInstance != null) {
+            this.modelInstance.transform.set(this.globalCoordinates, new Quaternion());
+        }
         for (DisplayObject child:this.children) {
             child.calculateGlobalCoordinates();
         }
