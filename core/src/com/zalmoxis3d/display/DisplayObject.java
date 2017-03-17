@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -28,6 +30,7 @@ public class DisplayObject extends EventDispatcher{
     private DisplayObject parent = null;
     private Set<DisplayObject> children = new LinkedHashSet<DisplayObject>();
     protected ModelInstance modelInstance = null;
+    protected Decal decal = null;
     protected Model model = null;
     protected BoundingBox boundingBox = null;
     private float alpha = 1;
@@ -183,6 +186,9 @@ public class DisplayObject extends EventDispatcher{
         if (this.modelInstance != null) {
             this.modelInstance.transform.set(this.globalCoordinates, new Quaternion());
         }
+        if (this.decal != null) {
+            this.decal.setPosition(this.globalCoordinates);
+        }
         for (DisplayObject child:this.children) {
             child.calculateGlobalCoordinates();
         }
@@ -263,13 +269,16 @@ public class DisplayObject extends EventDispatcher{
      * Render the current Display Object using a Model Batch and trigger rendering for all it's children
      * @param modelBatch
      */
-    protected void render(ModelBatch modelBatch) {
+    protected void render(ModelBatch modelBatch, DecalBatch decalBatch) {
         if (this.modelInstance != null) {
             modelBatch.render(this.modelInstance);
         }
+        if (this.decal != null) {
+            decalBatch.add(decal);
+        }
         for(DisplayObject child:children) {
             if (child.isVisible()) {
-                child.render(modelBatch);
+                child.render(modelBatch, decalBatch);
             }
         }
     }
