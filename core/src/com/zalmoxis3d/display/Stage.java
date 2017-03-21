@@ -163,7 +163,7 @@ public class Stage implements Screen, InputProcessor{
         }
 
         if (eventDispatcherTriggered != null) {
-            eventDispatcherTriggered.dispatchEvents(type, new TouchEvent(button, type));
+            eventDispatcherTriggered.dispatchEvents(type, new TouchEvent(button, type, screenX, screenY));
         }
 
         return false;

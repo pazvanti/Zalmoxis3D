@@ -71,21 +71,32 @@ public class DisplayObject extends EventDispatcher {
     }
 
     /**
-     * Retrieve the BoudingBox of the current DisplayObject as well as all children that it currently contains.
-     * The BoudingBoxed is CACHED since it is a costly operation. Any changes to the children structure (adding/removing)
+     * Retrieve the BoundingBox of the current DisplayObject as well as all children that it currently contains.
+     * The BoundingBoxed is CACHED since it is a costly operation. Any changes to the children structure (adding/removing)
      * will invalidate the bounding box
      * @return The BoundingBox of the current DisplayObject
      */
     public BoundingBox getBounds() {
         // The bounding box is cached since calculating it is costly. Only recalculate it if it has been invalidated
+        //TODO: Bounding box based on rotation
         if (this.boundingBox == null) {
             this.boundingBox = new BoundingBox();
             if (this.modelInstance != null) {
                 this.boundingBox = this.modelInstance.calculateBoundingBox(this.boundingBox).mul(this.modelInstance.transform);
             }
+            if (this.decal != null) {
+                this.boundingBox = new BoundingBox(
+                        new Vector3(this.globalCoordinates.x, this.globalCoordinates.y, 0),
+                        new Vector3(this.globalCoordinates.x + this.decal.getWidth(), this.globalCoordinates.y + this.decal.getHeight(), 0));
+            }
+            if (this.sprite != null) {
+                this.boundingBox = new BoundingBox(
+                        new Vector3(this.globalCoordinates.x, this.globalCoordinates.y, 0),
+                        new Vector3(this.globalCoordinates.x + this.sprite.getWidth(), this.globalCoordinates.y + this.sprite.getHeight(), 0));
+            }
             for (DisplayObject child:this.children) {
                 BoundingBox childBoundingBox = child.getBounds();
-                this.boundingBox = this.boundingBox.ext(boundingBox);
+                this.boundingBox = this.boundingBox.ext(childBoundingBox);
             }
         }
         return this.boundingBox;
@@ -120,6 +131,7 @@ public class DisplayObject extends EventDispatcher {
         if (children.contains(child)) {
             children.remove(child);
             if (dispose) {
+                child.removeEventListeners();
                 child.dispose();
             }
 
@@ -149,6 +161,12 @@ public class DisplayObject extends EventDispatcher {
             blendingAttribute.opacity = alpha;
             Material material = this.modelInstance.materials.get(0);
             material.set(blendingAttribute);
+        }
+        if (this.decal != null) {
+            //TODO: Alpha for decal
+        }
+        if (this.sprite != null) {
+            this.sprite.setAlpha(alpha);
         }
         for (DisplayObject child:children) {
             child.setAlpha(alpha);
@@ -197,6 +215,9 @@ public class DisplayObject extends EventDispatcher {
         if (this.decal != null) {
             this.decal.setPosition(this.globalCoordinates);
         }
+        if (this.sprite != null) {
+            this.sprite.setPosition(this.globalCoordinates.x, this.globalCoordinates.y);
+        }
         for (DisplayObject child:this.children) {
             child.calculateGlobalCoordinates();
         }
@@ -209,11 +230,7 @@ public class DisplayObject extends EventDispatcher {
      * @param z Translation amount on the Z axis
      */
     public void translate(float x, float y, float z) {
-        coordinates.add(x, y, z);
-        globalCoordinates.add(x, y, z);
-        for (DisplayObject child:this.children) {
-            child.calculateGlobalCoordinates();
-        }
+        translate(new Vector3(x, y, z));
     }
 
     /**

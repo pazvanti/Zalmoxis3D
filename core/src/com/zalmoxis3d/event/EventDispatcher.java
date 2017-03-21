@@ -41,7 +41,7 @@ public class EventDispatcher {
             EventHandler.getInstance().removeEventDispatcher(type, this);
         }
     }
-    public  void removeEventListeners() {
+    public void removeEventListeners() {
         Iterator<Map.Entry<String, List<IEventFunction>>> iterator = this.eventsMap.entrySet().iterator();
         while (iterator.hasNext()) {
             EventHandler.getInstance().removeEventDispatcher(iterator.next().getKey(), this);
