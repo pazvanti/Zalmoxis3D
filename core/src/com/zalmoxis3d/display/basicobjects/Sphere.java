@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.zalmoxis3d.display.DisplayObject;
+import com.zalmoxis3d.display.intersections.SphereIntersection;
 
 /**
  * Created by Petre Popescu on 29-Jan-17.
@@ -20,6 +21,7 @@ public class Sphere extends DisplayObject {
                 material,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
         this.modelInstance = new ModelInstance(model);
+        this.intersectionChecker = new SphereIntersection();
     }
     public Sphere(float size, int divisions, Attribute... attributes) {
         super();
@@ -28,6 +30,7 @@ public class Sphere extends DisplayObject {
                 new Material(attributes),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
         this.modelInstance = new ModelInstance(model);
+        this.intersectionChecker = new SphereIntersection();
     }
     public Sphere(float size, int divisions, Texture texture) {
         super();
@@ -36,6 +39,7 @@ public class Sphere extends DisplayObject {
                 new Material(TextureAttribute.createDiffuse(texture)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
         this.modelInstance = new ModelInstance(model);
+        this.intersectionChecker = new SphereIntersection();
     }
     public Sphere(float width, float height, float depth, int divisionsU, int divisionsV, Material material) {
         super();
@@ -44,6 +48,7 @@ public class Sphere extends DisplayObject {
                 material,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
         this.modelInstance = new ModelInstance(model);
+        this.intersectionChecker = new SphereIntersection();
     }
     public Sphere(float width, float height, float depth, int divisionsU, int divisionsV, Attribute... attributes) {
         super();
@@ -52,6 +57,7 @@ public class Sphere extends DisplayObject {
                 new Material(attributes),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
         this.modelInstance = new ModelInstance(model);
+        this.intersectionChecker = new SphereIntersection();
     }
     public Sphere(float width, float height, float depth, int divisionsU, int divisionsV, Texture texture) {
         super();
@@ -60,5 +66,6 @@ public class Sphere extends DisplayObject {
                 new Material(TextureAttribute.createDiffuse(texture)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
         this.modelInstance = new ModelInstance(model);
+        this.intersectionChecker = new SphereIntersection();
     }
 }

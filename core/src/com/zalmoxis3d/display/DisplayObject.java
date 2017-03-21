@@ -8,9 +8,13 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
+import com.zalmoxis3d.display.intersections.BoundingBoxIntersection;
+import com.zalmoxis3d.display.intersections.IIntersectionChecker;
 import com.zalmoxis3d.event.EventDispatcher;
 
 import java.util.LinkedHashSet;
@@ -23,7 +27,7 @@ import java.util.Set;
  * for rendering it using a Model Batch (provided by the Stage).
  * It extends EventDispatcher since this Display object is capable of having events attached to it.
  */
-public class DisplayObject extends EventDispatcher{
+public class DisplayObject extends EventDispatcher {
     private Vector3 coordinates = new Vector3(0, 0, 0);
     private Vector3 globalCoordinates = new Vector3(0, 0, 0);
     private boolean visible = true;
@@ -34,6 +38,7 @@ public class DisplayObject extends EventDispatcher{
     protected Model model = null;
     protected BoundingBox boundingBox = null;
     private float alpha = 1;
+    protected IIntersectionChecker intersectionChecker = new BoundingBoxIntersection();
 
     public DisplayObject() {
         super();
@@ -73,7 +78,7 @@ public class DisplayObject extends EventDispatcher{
         if (this.boundingBox == null) {
             this.boundingBox = new BoundingBox();
             if (this.modelInstance != null) {
-                this.boundingBox = this.modelInstance.calculateBoundingBox(this.boundingBox);
+                this.boundingBox = this.modelInstance.calculateBoundingBox(this.boundingBox).mul(this.modelInstance.transform);
             }
             for (DisplayObject child:this.children) {
                 BoundingBox childBoundingBox = child.getBounds();
@@ -281,5 +286,14 @@ public class DisplayObject extends EventDispatcher{
                 child.render(modelBatch, decalBatch);
             }
         }
+    }
+
+    public float rayCollision(Ray ray) {
+        Vector3 position = new Vector3();
+        this.modelInstance.transform.getTranslation(position);
+        float dist2 = ray.origin.dst2(position);
+        BoundingBox boundingBox = this.getBounds();
+        if (intersectionChecker.intersects(ray, this)) return dist2;
+        return Float.MAX_VALUE;
     }
 }

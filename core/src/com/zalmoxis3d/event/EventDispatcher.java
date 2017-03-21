@@ -1,9 +1,8 @@
 package com.zalmoxis3d.event;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.zalmoxis3d.event.events.Event;
+
+import java.util.*;
 
 /**
  * Created by Petre Popescu on 30-Jan-17.
@@ -22,8 +21,10 @@ public class EventDispatcher {
             eventsOfSameType = new ArrayList<IEventFunction>();
         }
         if (eventsOfSameType.contains(event)) return;
+        eventsOfSameType.add(event);
 
         eventsMap.put(type, eventsOfSameType);
+        EventHandler.getInstance().addEventDispatcher(type, this);
     }
 
     public boolean hasEventListener(String type) {
@@ -35,23 +36,30 @@ public class EventDispatcher {
         if (eventsOfSameType == null) return;
         eventsOfSameType.remove(event);
 
-        if (eventsOfSameType.isEmpty()) eventsMap.put(type, null);
+        if (eventsOfSameType.isEmpty()) {
+            eventsMap.put(type, null);
+            EventHandler.getInstance().removeEventDispatcher(type, this);
+        }
     }
     public  void removeEventListeners() {
+        Iterator<Map.Entry<String, List<IEventFunction>>> iterator = this.eventsMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            EventHandler.getInstance().removeEventDispatcher(iterator.next().getKey(), this);
+        }
         this.eventsMap = new HashMap<String, List<IEventFunction>>();
     }
 
-    public void dispatchEvent(IEventFunction event) {
+    public void dispatchEvent(IEventFunction eventFunction, Event event) {
         if (event == null) return;
-        event.dispatch();
+        eventFunction.dispatch(event);
     }
 
-    public void dispatchEvents(String type) {
+    public void dispatchEvents(String type, Event event) {
         List<IEventFunction> eventsOfSameType = eventsMap.get(type);
         if (eventsOfSameType == null) return;
 
-        for(IEventFunction event:eventsOfSameType) {
-            event.dispatch();
+        for(IEventFunction eventFunction:eventsOfSameType) {
+            eventFunction.dispatch(event);
         }
     }
 }
