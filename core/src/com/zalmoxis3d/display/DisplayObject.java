@@ -1,6 +1,8 @@
 package com.zalmoxis3d.display;
 
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -34,6 +36,7 @@ public class DisplayObject extends EventDispatcher {
     private DisplayObject parent = null;
     private Set<DisplayObject> children = new LinkedHashSet<DisplayObject>();
     protected ModelInstance modelInstance = null;
+    protected Sprite sprite = null;
     protected Decal decal = null;
     protected Model model = null;
     protected BoundingBox boundingBox = null;
@@ -274,25 +277,29 @@ public class DisplayObject extends EventDispatcher {
      * Render the current Display Object using a Model Batch and trigger rendering for all it's children
      * @param modelBatch
      */
-    protected void render(ModelBatch modelBatch, DecalBatch decalBatch) {
+    protected void render(ModelBatch modelBatch, DecalBatch decalBatch, SpriteBatch spriteBatch) {
         if (this.modelInstance != null) {
             modelBatch.render(this.modelInstance);
         }
         if (this.decal != null) {
             decalBatch.add(decal);
         }
+        if (this.sprite != null) {
+            spriteBatch.draw(this.sprite.getTexture(), this.globalCoordinates.x, this.globalCoordinates.y);
+        }
         for(DisplayObject child:children) {
             if (child.isVisible()) {
-                child.render(modelBatch, decalBatch);
+                child.render(modelBatch, decalBatch, spriteBatch);
             }
         }
     }
 
     public float rayCollision(Ray ray) {
+        //TODO: Check intersection with the Decal and Sprite if it is present
+        if (this.modelInstance == null) return Float.MAX_VALUE;
         Vector3 position = new Vector3();
         this.modelInstance.transform.getTranslation(position);
         float dist2 = ray.origin.dst2(position);
-        BoundingBox boundingBox = this.getBounds();
         if (intersectionChecker.intersects(ray, this)) return dist2;
         return Float.MAX_VALUE;
     }

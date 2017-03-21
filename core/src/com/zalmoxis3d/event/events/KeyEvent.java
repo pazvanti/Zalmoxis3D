@@ -2,6 +2,8 @@ package com.zalmoxis3d.event.events;
 
 /**
  * Created by petre.popescu on 2017-03-21.
+ *
+ * A Key Event that stores the key event details
  */
 public class KeyEvent extends Event {
     public static final String KEY_DOWN = "keyDown";
@@ -9,7 +11,8 @@ public class KeyEvent extends Event {
 
     private int keyCode;
 
-    public KeyEvent(int keyCode) {
+    public KeyEvent(int keyCode, String type) {
+        super(type);
         this.keyCode = keyCode;
     }
 

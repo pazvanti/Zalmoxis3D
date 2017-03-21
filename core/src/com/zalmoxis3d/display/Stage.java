@@ -67,9 +67,12 @@ public class Stage implements Screen, InputProcessor{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         modelBatch.begin(cam);
-        mainDisplayObject.render(this.modelBatch, this.decalBatch);
+        spriteBatch.begin();
+        mainDisplayObject.render(this.modelBatch, this.decalBatch, this.spriteBatch);
+        spriteBatch.end();
         modelBatch.end();
         decalBatch.flush();
+
     }
 
     @Override
@@ -108,22 +111,20 @@ public class Stage implements Screen, InputProcessor{
 
     @Override
     public boolean keyDown(int keycode) {
-        Set<EventDispatcher> itemsWithEvent = getItemsWithEvent(KeyEvent.KEY_DOWN);
-        if (itemsWithEvent == null || itemsWithEvent.isEmpty()) return false;
-
-        for(EventDispatcher eventDispatcher:itemsWithEvent) {
-            eventDispatcher.dispatchEvents(KeyEvent.KEY_DOWN, new KeyEvent(keycode));
-        }
-        return true;
+        return keyEvent(keycode, KeyEvent.KEY_DOWN);
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        Set<EventDispatcher> itemsWithEvent = getItemsWithEvent(KeyEvent.KEY_UP);
+        return keyEvent(keycode, KeyEvent.KEY_UP);
+    }
+
+    private boolean keyEvent(int keycode, String type) {
+        Set<EventDispatcher> itemsWithEvent = getItemsWithEvent(type);
         if (itemsWithEvent == null || itemsWithEvent.isEmpty()) return false;
 
         for(EventDispatcher eventDispatcher:itemsWithEvent) {
-            eventDispatcher.dispatchEvents(KeyEvent.KEY_UP, new KeyEvent(keycode));
+            eventDispatcher.dispatchEvents(type, new KeyEvent(keycode, type));
         }
         return true;
     }
@@ -135,7 +136,16 @@ public class Stage implements Screen, InputProcessor{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Set<EventDispatcher> itemsWithEvent = getItemsWithEvent(TouchEvent.TOUCH_DOWN);
+        return touchEvent(screenX, screenY, pointer, button, TouchEvent.TOUCH_DOWN);
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return touchEvent(screenX, screenY, pointer, button, TouchEvent.TOUCH_UP);
+    }
+
+    private boolean touchEvent(int screenX, int screenY, int pointer, int button, String type) {
+        Set<EventDispatcher> itemsWithEvent = getItemsWithEvent(type);
         if (itemsWithEvent == null || itemsWithEvent.isEmpty()) return false;
 
         Ray collisionRay = cam.getPickRay(screenX, screenY);
@@ -153,14 +163,9 @@ public class Stage implements Screen, InputProcessor{
         }
 
         if (eventDispatcherTriggered != null) {
-            eventDispatcherTriggered.dispatchEvents(TouchEvent.TOUCH_DOWN, new TouchEvent(button));
+            eventDispatcherTriggered.dispatchEvents(type, new TouchEvent(button, type));
         }
 
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         return false;
     }
 
