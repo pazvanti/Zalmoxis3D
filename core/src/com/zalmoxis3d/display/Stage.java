@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.collision.Ray;
 import com.zalmoxis3d.event.EventDispatcher;
 import com.zalmoxis3d.event.EventHandler;
@@ -183,6 +184,7 @@ public class Stage implements Screen, InputProcessor{
 
         Ray collisionRay = cam.getPickRay(screenX, screenY);
         float dist = Float.MAX_VALUE;
+        float depth2D = Float.MAX_VALUE;
         EventDispatcher eventDispatcherTriggered = null;
         for(EventDispatcher eventDispatcher:itemsWithEvent) {
             if (eventDispatcher instanceof DisplayObject) {
@@ -190,6 +192,12 @@ public class Stage implements Screen, InputProcessor{
                 float calculatedDist = displayObject.rayCollision(collisionRay);
                 if (dist > calculatedDist) {
                     dist = calculatedDist;
+                    eventDispatcherTriggered = eventDispatcher;
+                }
+
+                float touched2DObjectDepth = displayObject.clickCollision(new Vector2(screenX, screenY));
+                if (depth2D > touched2DObjectDepth) {
+                    depth2D = touched2DObjectDepth;
                     eventDispatcherTriggered = eventDispatcher;
                 }
             }

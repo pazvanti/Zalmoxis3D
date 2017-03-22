@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.zalmoxis3d.display.DisplayObject;
 import com.zalmoxis3d.display.Stage;
 import com.zalmoxis3d.display.basicobjects.Cube;
@@ -14,6 +15,10 @@ import com.zalmoxis3d.event.EventDispatcher;
 import com.zalmoxis3d.event.IEventFunction;
 import com.zalmoxis3d.event.events.Event;
 import com.zalmoxis3d.event.events.TouchEvent;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class Zalmoxis3D extends ApplicationAdapter {
 	private DisplayObject mainDisplayObject;
@@ -41,18 +46,24 @@ public class Zalmoxis3D extends ApplicationAdapter {
 		container.addChild(text3D);
 
 		Text2D text2D = new Text2D("Some 2D Text");
-		container.addChild(text2D);
+		mainDisplayObject.addChild(text2D);
 
 		Text2D text2DRed = new Text2D("Some red text", Color.RED);
-		text2DRed.translate(100, 0, 0);
-		container.addChild(text2DRed);
+		text2DRed.translate(text2D.getBounds().getWidth() + 10, 0, 0);
+		mainDisplayObject.addChild(text2DRed);
 
-		s1.addEventListener(TouchEvent.TOUCH_DOWN, new IEventFunction<TouchEvent>() {
+		text2D.addEventListener(TouchEvent.TOUCH_DOWN, (event) -> {
+			List<Color> colorList = Arrays.asList(Color.BLUE, Color.BROWN, Color.CORAL, Color.CYAN, Color.GOLD, Color.GREEN, Color.PURPLE, Color.FOREST);
+			Random random = new Random();
+			text2D.setColor(colorList.get(random.nextInt(colorList.size())));
+		});
+
+		/*s1.addEventListener(TouchEvent.TOUCH_DOWN, new IEventFunction<TouchEvent>() {
 			@Override
 			public void dispatch(TouchEvent event) {
 				System.out.println("S1 touched: " + event.getMouseButton());
 			}
-		});
+		});*/
 
 		container.translate(0, 10, -10);
 		mainDisplayObject.addChild(container);

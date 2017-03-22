@@ -1,5 +1,6 @@
 package com.zalmoxis3d.display;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
@@ -324,6 +326,21 @@ public class DisplayObject extends EventDispatcher {
         this.modelInstance.transform.getTranslation(position);
         float dist2 = ray.origin.dst2(position);
         if (intersectionChecker.intersects(ray, this)) return dist2;
+        return Float.MAX_VALUE;
+    }
+
+    public float clickCollision(Vector2 screenPoint) {
+        BoundingBox boundingBox = this.getBounds();
+        int minX = (int)this.globalCoordinates.x;
+        int maxX = minX + (int)boundingBox.getWidth();
+        int minY = (int)this.globalCoordinates.y;
+        int maxY = minY + (int)boundingBox.getHeight();
+
+        int screenHeight = Gdx.graphics.getHeight();
+        screenPoint.y = Math.abs(screenPoint.y - screenHeight);
+        if (screenPoint.x >= minX && screenPoint.x <= maxX) {
+            if (screenPoint.y >= minY && screenPoint.y <= maxY) return this.globalCoordinates.z;
+        }
         return Float.MAX_VALUE;
     }
 }
