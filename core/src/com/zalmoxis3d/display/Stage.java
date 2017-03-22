@@ -8,13 +8,17 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.math.collision.Ray;
 import com.zalmoxis3d.event.EventDispatcher;
 import com.zalmoxis3d.event.EventHandler;
+import com.zalmoxis3d.event.events.Event;
 import com.zalmoxis3d.event.events.KeyEvent;
 import com.zalmoxis3d.event.events.TouchEvent;
 
@@ -30,6 +34,7 @@ public class Stage implements Screen, InputProcessor{
     private OrthographicCamera cam;
     private DisplayObject mainDisplayObject;
     private Environment environment;
+    private Shader shader;
 
     public static float FIELD_OF_VIEW = 100;
 
@@ -41,7 +46,7 @@ public class Stage implements Screen, InputProcessor{
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
         cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(0f, 8f, 8f);
+        cam.position.set(0f, 0f, 8f);
         cam.lookAt(0, 0, 0);
         cam.near = 1f;
         cam.far = FIELD_OF_VIEW;
@@ -50,6 +55,23 @@ public class Stage implements Screen, InputProcessor{
         modelBatch = new ModelBatch();
         decalBatch = new DecalBatch(new CameraGroupStrategy(cam));
         spriteBatch = new SpriteBatch(100);
+
+        this.shader = new BaseShader() {
+            @Override
+            public void init() {
+            }
+
+            @Override
+            public int compareTo(Shader other) {
+                return 0;
+            }
+
+            @Override
+            public boolean canRender(Renderable instance) {
+                return false;
+            }
+        };
+        shader.init();
 
         Gdx.input.setInputProcessor(this);
     }
@@ -60,15 +82,26 @@ public class Stage implements Screen, InputProcessor{
     public void zoomOut(int amount) {
         zoomIn(-amount);
     }
+    public void setShader(Shader shader) {
+        this.shader = shader;
+    }
 
     public void render() {
+        // A new frame must be rendered. Trigger the ENTER_FRAME event
+        Set<EventDispatcher> itemsWithEvent = getItemsWithEvent(Event.ENTER_FRAME);
+        if (itemsWithEvent != null && !itemsWithEvent.isEmpty()) {
+            for (EventDispatcher eventDispatcher : itemsWithEvent) {
+                eventDispatcher.dispatchEvents(Event.ENTER_FRAME, new Event(Event.ENTER_FRAME));
+            }
+        }
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         modelBatch.begin(cam);
         spriteBatch.begin();
-        mainDisplayObject.render(this.modelBatch, this.decalBatch, this.spriteBatch);
+        mainDisplayObject.render(this.modelBatch, this.shader, this.decalBatch, this.spriteBatch);
         spriteBatch.end();
         modelBatch.end();
         decalBatch.flush();

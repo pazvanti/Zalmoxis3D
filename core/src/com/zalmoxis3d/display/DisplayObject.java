@@ -3,10 +3,7 @@ package com.zalmoxis3d.display;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
@@ -31,7 +28,7 @@ import java.util.Set;
  */
 public class DisplayObject extends EventDispatcher {
     private Vector3 coordinates = new Vector3(0, 0, 0);
-    private Vector3 globalCoordinates = new Vector3(0, 0, 0);
+    protected Vector3 globalCoordinates = new Vector3(0, 0, 0);
     private boolean visible = true;
     private DisplayObject parent = null;
     private Set<DisplayObject> children = new LinkedHashSet<DisplayObject>();
@@ -42,6 +39,7 @@ public class DisplayObject extends EventDispatcher {
     protected BoundingBox boundingBox = null;
     private float alpha = 1;
     protected IIntersectionChecker intersectionChecker = new BoundingBoxIntersection();
+    private Shader shader = null;
 
     public DisplayObject() {
         super();
@@ -68,6 +66,10 @@ public class DisplayObject extends EventDispatcher {
 
         // We need to recalculate our global coordinates based on the parent's global coordinates
         calculateGlobalCoordinates();
+    }
+
+    public void setShader(Shader shader) {
+        this.shader = shader;
     }
 
     /**
@@ -294,9 +296,13 @@ public class DisplayObject extends EventDispatcher {
      * Render the current Display Object using a Model Batch and trigger rendering for all it's children
      * @param modelBatch
      */
-    protected void render(ModelBatch modelBatch, DecalBatch decalBatch, SpriteBatch spriteBatch) {
+    protected void render(ModelBatch modelBatch, Shader defaultShader, DecalBatch decalBatch, SpriteBatch spriteBatch) {
         if (this.modelInstance != null) {
-            modelBatch.render(this.modelInstance);
+            if (this.shader == null) {
+                modelBatch.render(this.modelInstance, defaultShader);
+            } else {
+                modelBatch.render(this.modelInstance, this.shader);
+            }
         }
         if (this.decal != null) {
             decalBatch.add(decal);
@@ -306,7 +312,7 @@ public class DisplayObject extends EventDispatcher {
         }
         for(DisplayObject child:children) {
             if (child.isVisible()) {
-                child.render(modelBatch, decalBatch, spriteBatch);
+                child.render(modelBatch, defaultShader, decalBatch, spriteBatch);
             }
         }
     }

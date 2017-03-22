@@ -6,6 +6,7 @@ package com.zalmoxis3d.event.events;
  * The basic event class that stores event details
  */
 public class Event {
+    public static final String ENTER_FRAME = "enterFrame";
     private String type;
     public Event(String type) {
     }
