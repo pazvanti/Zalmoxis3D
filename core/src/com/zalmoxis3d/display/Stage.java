@@ -78,16 +78,34 @@ public class Stage implements Screen, InputProcessor{
         Gdx.input.setInputProcessor(this);
     }
 
+    /**
+     * Zoom in and out on the stage. The camera position is changed.
+     * @param amount
+     */
     public void zoomIn(int amount) {
         cam.position.set(cam.position.x + amount, 0, 0);
     }
+
+    /**
+     * Zoom out on the stage. The camera position is changed.
+     * @param amount
+     */
     public void zoomOut(int amount) {
         zoomIn(-amount);
     }
+
+    /**
+     * Set the shader for the stage. This will be used as the default shader for objects that do not have their own
+     * @param shader
+     */
     public void setShader(Shader shader) {
         this.shader = shader;
     }
 
+    /**
+     * The method that gets called each time a new frame needs to render.
+     * This method will trigger the Enter Frame event
+     */
     public void render() {
         // A new frame must be rendered. Trigger the ENTER_FRAME event
         Set<EventDispatcher> itemsWithEvent = getItemsWithEvent(Event.ENTER_FRAME);
@@ -107,7 +125,6 @@ public class Stage implements Screen, InputProcessor{
         spriteBatch.end();
         modelBatch.end();
         decalBatch.flush();
-
     }
 
     @Override
@@ -188,6 +205,15 @@ public class Stage implements Screen, InputProcessor{
         return touchEvent(screenX, screenY, pointer, button, TouchEvent.TOUCH_UP);
     }
 
+    /**
+     * The screen gets clicked or touched. Detect what object is in the touch zone and trigger it's on touch event
+     * @param screenX
+     * @param screenY
+     * @param pointer
+     * @param button
+     * @param type
+     * @return
+     */
     private boolean touchEvent(int screenX, int screenY, int pointer, int button, String type) {
         Set<EventDispatcher> itemsWithEvent = getItemsWithEvent(type);
         if (itemsWithEvent == null || itemsWithEvent.isEmpty()) return false;

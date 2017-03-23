@@ -54,12 +54,9 @@ public class Zalmoxis3D extends ApplicationAdapter {
 			text2D.setColor(colorList.get(random.nextInt(colorList.size())));
 		});
 
-		/*s1.addEventListener(TouchEvent.TOUCH_DOWN, new IEventFunction<TouchEvent>() {
-			@Override
-			public void dispatch(TouchEvent event) {
-				System.out.println("S1 touched: " + event.getMouseButton());
-			}
-		});*/
+		s1.addEventListener(TouchEvent.TOUCH_DOWN, (event) -> {
+			System.out.println("S1 touched: " + ((TouchEvent)event).getMouseButton());
+		});
 
 		container.translate(0, 10, -10);
 		mainDisplayObject.addChild(container);

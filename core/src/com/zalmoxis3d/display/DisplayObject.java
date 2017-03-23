@@ -70,6 +70,10 @@ public class DisplayObject extends EventDispatcher {
         calculateGlobalCoordinates();
     }
 
+    /**
+     * Set the shader for this Display Object
+     * @param shader
+     */
     public void setShader(Shader shader) {
         this.shader = shader;
     }
@@ -319,8 +323,14 @@ public class DisplayObject extends EventDispatcher {
         }
     }
 
+    /**
+     * Check collision between a ray and the object using the objects Intersection Checker. It is used mostly for touch
+     * and click detection
+     * @param ray
+     * @return
+     */
     public float rayCollision(Ray ray) {
-        //TODO: Check intersection with the Decal and Sprite if it is present
+        //TODO: Check intersection with the Decal if it is present
         if (this.modelInstance == null) return Float.MAX_VALUE;
         Vector3 position = new Vector3();
         this.modelInstance.transform.getTranslation(position);
@@ -329,6 +339,11 @@ public class DisplayObject extends EventDispatcher {
         return Float.MAX_VALUE;
     }
 
+    /**
+     * Check if a point is in the bounding rectangle of this object's sprite
+     * @param screenPoint
+     * @return
+     */
     public float clickCollision(Vector2 screenPoint) {
         BoundingBox boundingBox = this.getBounds();
         int minX = (int)this.globalCoordinates.x;
