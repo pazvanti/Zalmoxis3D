@@ -226,9 +226,7 @@ public class DisplayObject extends EventDispatcher {
         if (this.sprite != null) {
             this.sprite.setPosition(this.globalCoordinates.x, this.globalCoordinates.y);
         }
-        for (DisplayObject child:this.children) {
-            child.calculateGlobalCoordinates();
-        }
+        this.children.forEach(DisplayObject::calculateGlobalCoordinates);
     }
 
     /**
@@ -248,9 +246,7 @@ public class DisplayObject extends EventDispatcher {
     public void translate(Vector3 offset) {
         coordinates.add(offset);
         globalCoordinates.add(offset);
-        for (DisplayObject child:this.children) {
-            child.calculateGlobalCoordinates();
-        }
+        calculateGlobalCoordinates();
     }
 
     /**
