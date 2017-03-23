@@ -1,6 +1,7 @@
 package com.zalmoxis3d.event.events;
 
 import com.badlogic.gdx.math.Vector2;
+import com.zalmoxis3d.event.EventDispatcher;
 
 /**
  * Created by petre.popescu on 2017-03-20.
@@ -14,7 +15,7 @@ public class TouchEvent extends Event {
 
     private int mouseButton;
     private Vector2 touchPoint;
-    public TouchEvent(int mouseButton, String type, int screenX, int screenY) {
+    public TouchEvent(int mouseButton, int screenX, int screenY, String type) {
         super(type);
         this.mouseButton = mouseButton;
         this.touchPoint = new Vector2(screenX, screenY);

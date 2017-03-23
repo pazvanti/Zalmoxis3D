@@ -1,4 +1,4 @@
-package com.zalmoxis3d.display.basicobjects;
+package com.zalmoxis3d.display.basicobjects.objects3D;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -12,6 +12,8 @@ import com.zalmoxis3d.display.intersections.BoundingBoxIntersection;
 
 /**
  * Created by petre.popescu on 2017-03-22.
+ *
+ * A basic 3D 6-sided rectangle that has a width, height, depth and material
  */
 public class Cube extends DisplayObject {
     public Cube(float width, float height, float depth, Material material) {

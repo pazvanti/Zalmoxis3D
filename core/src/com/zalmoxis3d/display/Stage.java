@@ -21,6 +21,7 @@ import com.zalmoxis3d.event.EventDispatcher;
 import com.zalmoxis3d.event.EventHandler;
 import com.zalmoxis3d.event.events.Event;
 import com.zalmoxis3d.event.events.KeyEvent;
+import com.zalmoxis3d.event.events.StageEvent;
 import com.zalmoxis3d.event.events.TouchEvent;
 
 import java.util.Set;
@@ -111,7 +112,7 @@ public class Stage implements Screen, InputProcessor{
 
     @Override
     public void show() {
-
+        triggerStageEvent(StageEvent.SHOW);
     }
 
     @Override
@@ -121,22 +122,31 @@ public class Stage implements Screen, InputProcessor{
 
     @Override
     public void resize(int width, int height) {
-
+        triggerStageEvent(StageEvent.RESIZE);
     }
 
     @Override
     public void pause() {
-
+        triggerStageEvent(StageEvent.PAUSE);
     }
 
     @Override
     public void resume() {
-
+        triggerStageEvent(StageEvent.RESUME);
     }
 
     @Override
     public void hide() {
+        triggerStageEvent(StageEvent.HIDE);
+    }
 
+    private void triggerStageEvent(String eventType) {
+        Set<EventDispatcher> itemsWithEvent = getItemsWithEvent(eventType);
+        if (itemsWithEvent == null || itemsWithEvent.isEmpty()) return;
+
+        for(EventDispatcher eventDispatcher:itemsWithEvent) {
+            eventDispatcher.dispatchEvents(eventType, new StageEvent(this, eventType));
+        }
     }
 
     public void dispose() {
@@ -204,7 +214,7 @@ public class Stage implements Screen, InputProcessor{
         }
 
         if (eventDispatcherTriggered != null) {
-            eventDispatcherTriggered.dispatchEvents(type, new TouchEvent(button, type, screenX, screenY));
+            eventDispatcherTriggered.dispatchEvents(type, new TouchEvent(button, screenX, screenY, type));
         }
 
         return false;

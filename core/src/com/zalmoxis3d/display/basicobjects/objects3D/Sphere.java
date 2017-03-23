@@ -1,4 +1,4 @@
-package com.zalmoxis3d.display.basicobjects;
+package com.zalmoxis3d.display.basicobjects.objects3D;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -12,6 +12,8 @@ import com.zalmoxis3d.display.intersections.SphereIntersection;
 
 /**
  * Created by Petre Popescu on 29-Jan-17.
+ *
+ * A basic 3D round object that has width, height, depth and material. Number of divisions can also be specified
  */
 public class Sphere extends DisplayObject {
     public Sphere(float size, int divisions, Material material) {

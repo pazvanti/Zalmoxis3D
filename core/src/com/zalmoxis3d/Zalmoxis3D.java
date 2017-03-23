@@ -4,16 +4,12 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.zalmoxis3d.display.DisplayObject;
 import com.zalmoxis3d.display.Stage;
-import com.zalmoxis3d.display.basicobjects.Cube;
-import com.zalmoxis3d.display.basicobjects.Sphere;
+import com.zalmoxis3d.display.basicobjects.objects3D.Cube;
+import com.zalmoxis3d.display.basicobjects.objects3D.Sphere;
 import com.zalmoxis3d.display.text.Text2D;
 import com.zalmoxis3d.display.text.Text3D;
-import com.zalmoxis3d.event.EventDispatcher;
-import com.zalmoxis3d.event.IEventFunction;
-import com.zalmoxis3d.event.events.Event;
 import com.zalmoxis3d.event.events.TouchEvent;
 
 import java.util.Arrays;

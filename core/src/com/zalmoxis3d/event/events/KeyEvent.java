@@ -1,5 +1,7 @@
 package com.zalmoxis3d.event.events;
 
+import com.zalmoxis3d.event.EventDispatcher;
+
 /**
  * Created by petre.popescu on 2017-03-21.
  *

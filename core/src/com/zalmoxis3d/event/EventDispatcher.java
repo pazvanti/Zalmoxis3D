@@ -59,6 +59,7 @@ public class EventDispatcher {
         if (eventsOfSameType == null) return;
 
         for(IEventFunction eventFunction:eventsOfSameType) {
+            event.setCurrentTarget(this);
             eventFunction.dispatch(event);
         }
     }
