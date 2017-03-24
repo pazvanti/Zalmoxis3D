@@ -3,6 +3,7 @@ package com.zalmoxis3d.display;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -33,19 +34,32 @@ public class Stage implements Screen, InputProcessor{
     private ModelBatch modelBatch;
     private DecalBatch decalBatch;
     private SpriteBatch spriteBatch;
-    private OrthographicCamera cam;
+    private Camera cam;
     private DisplayObject mainDisplayObject;
-    private Environment environment;
-    private Shader shader;
+    private Environment environment = null;
+    private Shader shader = null;
 
     public static float FIELD_OF_VIEW = 100;
 
-    public Stage(DisplayObject mainDisplayObject) {
+    private boolean hasBeenInitialized = false;
+
+    public static final Stage INSTANCE = new Stage();
+
+    public static Stage getInstance() {
+        return INSTANCE;
+    }
+
+    private Stage() {
+    }
+
+    public void init(DisplayObject mainDisplayObject) {
         this.mainDisplayObject = mainDisplayObject;
 
-        environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+        if (this.environment == null) {
+            environment = new Environment();
+            environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+            environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+        }
 
         cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(0f, 0f, 8f);
@@ -58,24 +72,34 @@ public class Stage implements Screen, InputProcessor{
         decalBatch = new DecalBatch(new CameraGroupStrategy(cam));
         spriteBatch = new SpriteBatch(100);
 
-        this.shader = new BaseShader() {
-            @Override
-            public void init() {
-            }
+        if (this.shader == null) {
+            this.shader = new BaseShader() {
+                @Override
+                public void init() {
+                }
 
-            @Override
-            public int compareTo(Shader other) {
-                return 0;
-            }
+                @Override
+                public int compareTo(Shader other) {
+                    return 0;
+                }
 
-            @Override
-            public boolean canRender(Renderable instance) {
-                return false;
-            }
-        };
+                @Override
+                public boolean canRender(Renderable instance) {
+                    return false;
+                }
+            };
+        }
         shader.init();
 
         Gdx.input.setInputProcessor(this);
+    }
+
+    /**
+     * Return the camera that is being used
+     * @return
+     */
+    public Camera getCamera() {
+        return this.cam;
     }
 
     /**

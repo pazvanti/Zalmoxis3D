@@ -55,6 +55,7 @@ public class DisplayObject extends EventDispatcher {
         if (child == null) return;
         child.setParent(this);
         children.add(child);
+        this.calculateGlobalCoordinates();
         this.boundingBox = null;
     }
 
@@ -216,7 +217,11 @@ public class DisplayObject extends EventDispatcher {
      * This method calculates those coordinates using it's parent position and it's logical position inside the parent.
      */
     protected void calculateGlobalCoordinates() {
-        this.globalCoordinates = new Vector3(this.coordinates).add(this.parent.globalCoordinates);
+        if (this.parent != null) {
+            this.globalCoordinates = new Vector3(this.coordinates).add(this.parent.globalCoordinates);
+        } else {
+            this.globalCoordinates = new Vector3(this.coordinates);
+        }
         if (this.modelInstance != null) {
             this.modelInstance.transform.set(this.globalCoordinates, new Quaternion());
         }

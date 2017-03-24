@@ -9,29 +9,80 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.Matrix4;
 import com.zalmoxis3d.display.DisplayObject;
+import com.zalmoxis3d.display.Stage;
 
 /**
  * Created by Petre Popescu on 02-Feb-17.
  */
 public class Text3D extends DisplayObject {
     private String text;
-    public Text3D(String text, float scale) {
+    private float scale = 1;
+    private Color color = Color.WHITE;
+    private int width;
+    private int height;
+
+    public Text3D(String text) {
         this.text = text;
+        initDecal();
+    }
+
+    public Text3D(String text, Color color) {
+        this.text = text;
+        this.color = color;
+        initDecal();
+    }
+
+    public Text3D(String text, Color color, float scale) {
+        this.text = text;
+        this.color = color;
+        this.scale = scale;
+        initDecal();
+    }
+
+    public void setText(String text) {
+        this.text = text;
+        initDecal();
+    }
+
+    public String getText() {
+        return this.text;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+        initDecal();
+    }
+
+    public Color getColor() {
+        return this.color;
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
+        initDecal();
+    }
+
+    public float getScale() {
+        return this.scale;
+    }
+
+    private Texture getTexture() {
         BitmapFont font = new BitmapFont();
-        font.setColor(Color.WHITE);
-        font.getData().scale(scale);
+        font.setColor(this.color);
+        font.getData().scale(this.scale);
 
         GlyphLayout glyphLayout = new GlyphLayout();
         glyphLayout.setText(font, text);
 
-        FrameBuffer fbo = new FrameBuffer(Pixmap.Format.RGBA8888, (int)Math.ceil(glyphLayout.width), (int)Math.ceil(glyphLayout.height), false);
+        //TODO: Width is not correct. need to see why
+        this.width = (int)Math.ceil(glyphLayout.width);
+        this.height = (int)Math.ceil(glyphLayout.height);
 
-        SpriteBatch batch = new SpriteBatch(100);
-        Matrix4 m = new Matrix4();
-        m.setToOrtho2D(0, 0, fbo.getWidth(), fbo.getHeight());
-        batch.setProjectionMatrix(m);
+        FrameBuffer fbo = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
+
+        SpriteBatch batch = new SpriteBatch(1);
+        batch.setProjectionMatrix(Stage.getInstance().getCamera().combined);
 
         fbo.begin();
         batch.begin();
@@ -39,9 +90,20 @@ public class Text3D extends DisplayObject {
         batch.end();
         fbo.end();
 
-        Texture textTexture = fbo.getColorBufferTexture();
+        Texture texture = fbo.getColorBufferTexture();
 
-        this.decal = Decal.newDecal(glyphLayout.width, glyphLayout.height, new TextureRegion(textTexture));
-        this.decal.setPosition(0, 0, 0);
+        //TODO: We may save memory if we dispose the FBO and Batch. However, if we do this the texture is disposed as well.
+        /*fbo.dispose();
+        batch.dispose();
+        font.dispose();*/
+
+        return texture;
+    }
+
+    private void initDecal() {
+        Texture textTexture = getTexture();
+
+        this.decal = Decal.newDecal(this.width, this.height, new TextureRegion(textTexture, this.width, this.height));
+        this.decal.setPosition(this.globalCoordinates.x, this.globalCoordinates.y, this.globalCoordinates.z);
     }
 }
